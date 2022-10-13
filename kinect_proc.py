@@ -37,6 +37,9 @@ class BVHReader:
     def __init__(self, save_folder):
         self.save_folder = save_folder
 
+        if not os.path.exists(save_folder):
+            os.makedirs(save_folder)  
+
     def open_csv(self, filename, mode='r'):
         """Open a csv file in proper mode depending on Python version."""
         if sys.version_info < (3,):
