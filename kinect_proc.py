@@ -4,6 +4,7 @@ import io
 import sys
 import csv
 
+import time
 import json
 import glob
 import tqdm
@@ -59,7 +60,7 @@ class BVHReader:
             new_frame = process_bvhkeyframe(other_s.keyframes[i], other_s.root,
                                             other_s.dt * i)
         
-        file_out = file_in[:-4] + "_worldpos.csv"
+        file_out = file_in[:-4] + ".csv"
         file_rot_out = ''
 
         with self.open_csv(self.save_folder+'/'+file_out.split('\\')[-1], 'w') as f:
@@ -151,6 +152,7 @@ class KinectProcessor:
             new_audio = new_audio[:end_time]
             new_audio.export(self.save_dir+'/audios/'+temp.replace('audio', 'audio_proc'), format='wav')
             audio_name = self.save_dir+'/audios/'+temp.replace('audio', 'audio_proc')
+            print(audio_name)
 
             # extract video avi file
             temp = file.split('\\')[-1].replace('.csv', '.avi')
@@ -160,6 +162,7 @@ class KinectProcessor:
             ffmpeg_extract_subclip(self.root_dir+'/videos/'+temp, 0, df_temp.Time[len(df_temp)-1] - df_temp.Time[0], 
                           targetname=self.save_dir+'/videos/'+temp.replace('video', 'video_proc'))
             video_name = self.save_dir+'/videos/'+temp.replace('video', 'video_proc')
+            print(video_name)
 
             # combine video and audio
             command = ffmpeg_exe_path + ' -i ' + video_name + ' -i ' + audio_name + ' -c:v copy -c:a aac ' + self.save_dir + '/movies/' + temp.replace('video', 'movie')
@@ -248,4 +251,11 @@ class KinectProcessor:
             plt.draw()
             plt.pause(pause)
             
-        
+if __name__ == '__main__':
+    # Step 1: extract 3D positions from bvh files
+    bvh_processer = BVHReader(save_folder=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\landmarkers') # the final folder must be named as 'landmarkers'
+    bvh_processer.proc_folder(tgt_folder=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\kinect_bvh') # this folder is 'kinect_bvh' folder in the raw collection
+    
+    # Step 2: process 3D position data, video and audio
+    kinect = KinectProcessor(root_dir=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10', save_dir=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\processed')
+    kinect.extract_frames_folder()
