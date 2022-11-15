@@ -252,15 +252,6 @@ class KinectProcessor:
             
             plt.draw()
             plt.pause(pause)
-            
-if __name__ == '__main__':
-    # Step 1: extract 3D positions from bvh files
-    bvh_processer = BVHReader(save_folder=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\landmarkers') # the final folder must be named as 'landmarkers'
-    bvh_processer.proc_folder(tgt_folder=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\kinect_bvh') # this folder is 'kinect_bvh' folder in the raw collection
-    
-    # Step 2: process 3D position data, video and audio
-    kinect = KinectProcessor(root_dir=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10', save_dir=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\processed')
-    kinect.extract_frames_folder()
 
 class UWBProcessor(BasicProc):
     """
@@ -528,18 +519,18 @@ class LaserProcessor(BasicProc):
             a uwb spectrogram segment.
         """
         times = self._loadtimestamp(timestamp_file)
-        frames_time = self._calcu_timestamp_mmWaveframes(lasermatobj, index)
+        frames_time = self._calcu_timestamp_laserframes(lasermatobj, index)
         
         kinec_start_time = self._datetime2unixtimestamp(self._iosstr2datetime(times['start_dtime'], "%Y-%m-%d %H:%M:%S.%f"))
         kinec_end_time = self._datetime2unixtimestamp(self._iosstr2datetime(times['end_dtime'], "%Y-%m-%d %H:%M:%S.%f"))
         
         start_idx, end_idx = self._match_start_end_ts(frames_time, kinec_start_time, kinec_end_time)
         
-        laser_sample = lasermatobj['datatimestep_02'][int(index-1)][start_idx:end_idx+1]
+        laser_sample = lasermatobj['lip_dataset_02_Y'][int(index-1)][start_idx:end_idx+1]
         
         return laser_sample
         
-    def _calcu_timestamp_mmWaveframes(self, lasermatobj, index):
+    def _calcu_timestamp_laserframes(self, lasermatobj, index):
         """
         Parameters
         ----------
@@ -553,7 +544,7 @@ class LaserProcessor(BasicProc):
         """
         frames_time = [] 
         
-        frames_no = lasermatobj['datatimestep_02'].shape[1]
+        frames_no = lasermatobj['lip_dataset_02_Y'].shape[1]
         start_dtime_str = '-'.join([str(int(x)) for x in lasermatobj['datatimestart_02'][int(index-1)][0:-1]] + [str(lasermatobj['datatimestart_02'][int(index-1)][-1])])
         end_dtime_str = '-'.join([str(int(x)) for x in lasermatobj['datatimestop_02'][int(index-1)][0:-1]] + [str(lasermatobj['datatimestop_02'][int(index-1)][-1])])
         
@@ -566,3 +557,12 @@ class LaserProcessor(BasicProc):
             frames_time.append(start_time+i*time_interval/(frames_no-1))
 
         return frames_time
+    
+# if __name__ == '__main__':
+#     # Step 1: extract 3D positions from bvh files
+#     bvh_processer = BVHReader(save_folder=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\landmarkers') # the final folder must be named as 'landmarkers'
+#     bvh_processer.proc_folder(tgt_folder=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\kinect_bvh') # this folder is 'kinect_bvh' folder in the raw collection
+    
+#     # Step 2: process 3D position data, video and audio
+#     kinect = KinectProcessor(root_dir=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10', save_dir=r'D:\Glasgow\DataSample\Kinect_Person_1\sentences10\processed')
+#     kinect.extract_frames_folder()
