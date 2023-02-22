@@ -526,7 +526,7 @@ class LaserProcessor(BasicProc):
         
         start_idx, end_idx = self._match_start_end_ts(frames_time, kinec_start_time, kinec_end_time)
         
-        laser_sample = lasermatobj['lip_dataset_02_Y'][int(index-1)][start_idx:end_idx+1]
+        laser_sample = lasermatobj['lip_dataset_Y'][int(index-1)][start_idx:end_idx+1]
         
         return laser_sample
         
@@ -544,17 +544,17 @@ class LaserProcessor(BasicProc):
         """
         frames_time = [] 
         
-        frames_no = lasermatobj['lip_dataset_02_Y'].shape[1]
-        start_dtime_str = '-'.join([str(int(x)) for x in lasermatobj['datatimestart_02'][int(index-1)][0:-1]] + [str(lasermatobj['datatimestart_02'][int(index-1)][-1])])
-        end_dtime_str = '-'.join([str(int(x)) for x in lasermatobj['datatimestop_02'][int(index-1)][0:-1]] + [str(lasermatobj['datatimestop_02'][int(index-1)][-1])])
+        frames_no = lasermatobj['lip_dataset_Y'].shape[1]
+        # start_dtime_str = '-'.join([str(int(x)) for x in lasermatobj['datatimestart'][int(index-1)][0:-1]] + [str(lasermatobj['datatimestart'][int(index-1)][-1])])
+        end_dtime_str = '-'.join([str(int(x)) for x in lasermatobj['datatimestop'][int(index-1)][0:-1]] + [str(lasermatobj['datatimestop'][int(index-1)][-1])])
         
-        start_time = self._datetime2unixtimestamp(self._iosstr2datetime(start_dtime_str, form="%Y-%m-%d-%H-%M-%S.%f"))
+        # start_time = self._datetime2unixtimestamp(self._iosstr2datetime(start_dtime_str, form="%Y-%m-%d-%H-%M-%S.%f"))
         end_time = self._datetime2unixtimestamp(self._iosstr2datetime(end_dtime_str, form="%Y-%m-%d-%H-%M-%S.%f"))
-        time_interval = end_time - start_time
+        time_interval = lasermatobj['datatimestep'][int(index-1)][-1]
         
-        for i in range(frames_no):
+        for i in reversed(range(frames_no)):
 
-            frames_time.append(start_time+i*time_interval/(frames_no-1))
+            frames_time.append(end_time-lasermatobj['datatimestep'][int(index-1)][i])
 
         return frames_time
     
