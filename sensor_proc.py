@@ -487,9 +487,9 @@ class LaserProcessor(BasicProc):
         """
         exp_info = lasermat_file.replace('.mat', '').split('_')
         
-        lasermat = loadmat(self.root_dir + '/Laser/' + lasermat_file)
-        timestamp_folder = self.root_dir + '/Kinect_Person_' + exp_info[1] + '/' + self.lookup_dict(index)[0] + str(self.lookup_dict(index)[1]) + '/timestamps'
-        save_dir = self.root_dir + '/Laser/' + self.lookup_dict(index)[0] + str(self.lookup_dict(index)[1])
+        lasermat = loadmat(self.root_dir + '/Processed_laser_data/' + lasermat_file)
+        timestamp_folder = self.root_dir + '/Kinect_timestamps/' + str(int(exp_info[-1])) + '/' + str(int(exp_info[-1])) + '_kinect_uwb/' + self.lookup_dict(index)[0] + str(self.lookup_dict(index)[1]) + '/timestamps'
+        save_dir = self.root_dir + '/Laser/' + str(int(exp_info[-1])) + '/' + self.lookup_dict(index)[0] + str(self.lookup_dict(index)[1])
         
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)  
